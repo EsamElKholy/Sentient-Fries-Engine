@@ -30,3 +30,10 @@
 *.exe
 *.out
 *.app
+Sentient Engine/.vs/
+Sentient Engine/Sentient Editor/obj/
+*.csproj
+Sentient Engine/Sentient Engine/x64/
+*.filters
+*.vcxproj
+Sentient Engine/x64/

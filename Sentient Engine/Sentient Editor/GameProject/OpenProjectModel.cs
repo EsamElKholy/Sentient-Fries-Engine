@@ -109,7 +109,7 @@ namespace Sentient_Editor.GameProject
 
             WriteProjectData();
 
-            return null;
+            return Project.LoadProject(project.FullPath);
         }
     }
 }

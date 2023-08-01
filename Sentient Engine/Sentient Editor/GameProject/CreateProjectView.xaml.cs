@@ -39,7 +39,10 @@ namespace Sentient_Editor.GameProject
                 dialogueResult = true;
 
                 var project = OpenProjectModel.OpenProject(new ProjectData() { ProjectName = viewModel.ProjectName, ProjectPath = projectPath });
+
+                window.DataContext = project;
             }
+
             window.DialogResult = dialogueResult;
             window.Close();
         }

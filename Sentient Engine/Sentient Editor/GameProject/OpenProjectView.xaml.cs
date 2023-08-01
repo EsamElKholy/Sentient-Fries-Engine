@@ -24,5 +24,33 @@ namespace Sentient_Editor.GameProject
         {
             InitializeComponent();
         }
+
+        private void OnOpen_Button_Click(object sender, RoutedEventArgs e)
+        {
+            OpenSelectedProject();
+        }
+
+        private void OpenSelectedProject() 
+        {
+            var project = OpenProjectModel.OpenProject(projectsListBox.SelectedItem as ProjectData);
+
+            var window = Window.GetWindow(this);
+            bool dialogueResult = false;
+
+            if (project != null)
+            {
+                dialogueResult = true;
+
+                window.DataContext = project;
+            }
+
+            window.DialogResult = dialogueResult;
+            window.Close();
+        }
+
+        private void OnListBoxItem_Mouse_Double_Click(object sender, MouseButtonEventArgs e) 
+        {
+            OpenSelectedProject();
+        }
     }
 }

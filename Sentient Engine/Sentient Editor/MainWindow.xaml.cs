@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Sentient_Editor.GameProject;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,6 +26,14 @@ namespace Sentient_Editor
         {
             InitializeComponent();
             Loaded += OnMainWindowLoaded;
+            Closing += OnMainWindowClosing;
+        }
+
+        private void OnMainWindowClosing(object sender, CancelEventArgs e)
+        {
+            Closing -= OnMainWindowClosing;
+
+            Project.Current?.UnloadProject();
         }
 
         private void OnMainWindowLoaded(object sender, RoutedEventArgs e) 
@@ -37,12 +47,15 @@ namespace Sentient_Editor
         {
             var projectBrowser = new GameProject.ProjectBrowserDialogue();
            
-            if (projectBrowser.ShowDialog() == false) 
+            if (projectBrowser.ShowDialog() == false || projectBrowser.DataContext == null) 
             {
                 Application.Current.Shutdown();
             }
             else
             {
+                Project.Current?.UnloadProject();
+
+                DataContext = projectBrowser.DataContext;
             }
         }
     }

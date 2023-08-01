@@ -28,6 +28,22 @@ namespace Sentient_Editor.GameProject
 
         [DataMember]
         public Project Project { get; private set; }
+        
+        private bool isActive;
+        
+        [DataMember]
+        public bool IsActive
+        {
+            get { return isActive; }
+            set
+            {
+                if (isActive != value)
+                {
+                    isActive = value;
+                    OnPropertyChanged(nameof(IsActive));
+                }
+            }
+        }
 
         public Scene(string name, Project project)
         {

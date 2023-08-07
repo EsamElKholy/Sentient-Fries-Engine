@@ -44,7 +44,7 @@ namespace Sentient_Editor.GameProject
         private ObservableCollection<ProjectTemplate> projectTemplates = new ObservableCollection<ProjectTemplate>();
 
         private string projectName = "New Project";
-        private string projectPath = $@"..\..\Sentient Projects\";
+        private string projectPath = $@"..\..\..\..\Sentient Projects\";
         private bool isValid = false;
         private string errorMessage;
 

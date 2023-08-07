@@ -36,7 +36,7 @@ namespace Sentient_Editor.GameProject
 
     public class OpenProjectModel 
     {
-        private static readonly string applicationDataPath = $@"..\..\Sentient Projects Data\";
+        private static readonly string applicationDataPath = $@"..\..\..\..\Sentient Projects Data\";
         private static readonly string projectDataPath;
         private static readonly ObservableCollection<ProjectData> projects = new ObservableCollection<ProjectData>();
         public static ReadOnlyObservableCollection<ProjectData> Projects { get; }

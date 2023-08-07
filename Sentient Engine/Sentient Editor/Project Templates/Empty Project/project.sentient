@@ -3,9 +3,10 @@
     <ProjectPath>{1}</ProjectPath>
     <Scenes>
         <Scene z:Id="i2">
+            <GameEntities xmlns:a="http://schemas.datacontract.org/2004/07/Sentient_Editor.Components"></GameEntities>
             <IsActive>true</IsActive>
-            <Project z:Ref="i1"/>
             <SceneName>Default Scene</SceneName>
+            <Project z:Ref="i1"/>
         </Scene>
     </Scenes>
 </Game>

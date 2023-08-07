@@ -1,4 +1,5 @@
-﻿using Sentient_Editor.GameProject;
+﻿using Sentient_Editor.Components;
+using Sentient_Editor.GameProject;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +25,20 @@ namespace Sentient_Editor.Editors
         public ProjectLayoutView()
         {
             InitializeComponent();
+        }
+
+        private void OnAddGameEntity_Button_Click(object sender, RoutedEventArgs e)
+        {
+            var button = sender as Button;
+            var scene = button.DataContext as Scene;
+            scene.AddGameEntityCommand.Execute(new GameEntity(scene) { Name = "Empty Game Entity"});
+        }
+
+        private void OnGameEntities_Listbox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var entity = (sender as ListBox).SelectedItems[0];
+
+            GameEntityView.Instance.DataContext = entity;
         }
     }
 }

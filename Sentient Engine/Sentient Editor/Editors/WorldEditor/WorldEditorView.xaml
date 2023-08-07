@@ -4,17 +4,24 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Sentient_Editor.Editors"
-             xmlns:utl="clr-namespace:Sentient_Editor.Utilities"
-             mc:Ignorable="d"
+             xmlns:utl="clr-namespace:Sentient_Editor.Utilities" 
+             xmlns:gameproject="clr-namespace:Sentient_Editor.GameProject" 
+             d:DataContext="{d:DesignInstance Type=gameproject:Project}"
+             mc:Ignorable="d" Focusable="True"
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.InputBindings>
+        <KeyBinding Command="{Binding UndoCommand}" Key="Z" Modifiers="Ctrl"></KeyBinding>
+        <KeyBinding Command="{Binding RedoCommand}" Key="Y" Modifiers="Ctrl"></KeyBinding>
+        <KeyBinding Command="{Binding SaveCommand}" Key="S" Modifiers="Ctrl"></KeyBinding>
+    </UserControl.InputBindings>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="32"></RowDefinition>
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal">
-            <Button Content="Undo" Command="{Binding Undo}"></Button>
-            <Button Content="Redo" Command="{Binding Redo}" Margin="32, 0, 0, 0"></Button>
+            <Button Content="Undo" Command="{Binding UndoCommand}"></Button>
+            <Button Content="Redo" Command="{Binding RedoCommand}" Margin="32, 0, 0, 0"></Button>
         </StackPanel>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
@@ -37,6 +44,7 @@
                 </Grid.RowDefinitions>
                 <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Top"></GridSplitter>
                 <local:ProjectLayoutView></local:ProjectLayoutView>
+                <local:GameEntityView Grid.Row="1"></local:GameEntityView>
             </Grid>
         </Grid>
     </Grid>

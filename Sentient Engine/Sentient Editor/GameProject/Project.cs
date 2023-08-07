@@ -75,7 +75,7 @@ namespace Sentient_Editor.GameProject
 
         public void UnloadProject() 
         {
-            
+            UndoRedo.Reset();
         }
 
         public static Project LoadProject(string file) 
@@ -88,6 +88,8 @@ namespace Sentient_Editor.GameProject
         public static void SaveProject(Project project)
         {
             Serializer.ToFile<Project>(project, project.FullPath);
+
+            Logger.Log(MessageType.Info, $"Saved project to {project.FullPath}");
         }
 
         [OnDeserialized]

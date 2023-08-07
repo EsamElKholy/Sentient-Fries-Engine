@@ -8,6 +8,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace Sentient_Editor.Components
 {
@@ -15,6 +16,22 @@ namespace Sentient_Editor.Components
     [KnownType(typeof(Transform))]
     public class GameEntity : ViewModelBase
     {
+        private bool isEnabled = true;
+
+        [DataMember]
+        public bool IsEnabled
+        {
+            get { return isEnabled; }
+            set
+            {
+                if (isEnabled != value)
+                {
+                    isEnabled = value;
+                    OnPropertyChanged(nameof(IsEnabled));
+                }
+            }
+        }
+
         private string name;
 
         [DataMember]
@@ -38,6 +55,9 @@ namespace Sentient_Editor.Components
         private  ObservableCollection<Component> components = new ObservableCollection<Component>();
         public ReadOnlyObservableCollection<Component> Components { get; private set; }
 
+        public ICommand RenameCommand { get; private set; }
+        public ICommand EnableCommand { get; private set; }
+
         public GameEntity(Scene scene)
         {
             Debug.Assert(scene != null);
@@ -46,7 +66,7 @@ namespace Sentient_Editor.Components
 
             components.Add(new Transform(this));
 
-            Components = new ReadOnlyObservableCollection<Component>(components);
+            OnDeserialized(new StreamingContext());
         }
 
         [OnDeserialized]
@@ -57,6 +77,20 @@ namespace Sentient_Editor.Components
                 Components = new ReadOnlyObservableCollection<Component>(components);
                 OnPropertyChanged(nameof(Components));
             }
+
+            RenameCommand = new RelayCommand<string>(x =>
+            {
+                var oldName = Name;
+                Name = x;
+                Project.UndoRedo.Add(new UndoRedoAction(nameof(Name), this, oldName, x, $"Rename entity {oldName} to {x}"));
+            }, y => y != name);
+
+            EnableCommand = new RelayCommand<bool>(x =>
+            {
+                var oldEnabled = Name;
+                IsEnabled = x;
+                Project.UndoRedo.Add(new UndoRedoAction(nameof(IsEnabled), this, oldEnabled, x, $"Set entity enabled from {oldEnabled} to {x}"));
+            });
 
             //AddComponentCommand = new RelayCommand<Component>(x =>
             //{

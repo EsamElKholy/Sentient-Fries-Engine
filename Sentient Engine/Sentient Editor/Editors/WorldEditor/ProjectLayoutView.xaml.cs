@@ -1,5 +1,6 @@
 ﻿using Sentient_Editor.Components;
 using Sentient_Editor.GameProject;
+using Sentient_Editor.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,9 +37,31 @@ namespace Sentient_Editor.Editors
 
         private void OnGameEntities_Listbox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var entity = (sender as ListBox).SelectedItems[0];
+            GameEntityView.Instance.DataContext = null;
+            var listBox = sender as ListBox;
 
-            GameEntityView.Instance.DataContext = entity;
+            if (e.AddedItems.Count > 0)
+            {
+                GameEntityView.Instance.DataContext = listBox.SelectedItems[0];
+            }
+
+            var newSelection = listBox.SelectedItems.Cast<GameEntity>().ToList();
+            var previousSelection = newSelection.Except(e.AddedItems.Cast<GameEntity>()).Concat(e.RemovedItems.Cast<GameEntity>()).ToList();
+
+            Project.UndoRedo.Add(new UndoRedoAction
+                (
+                    () => // Undo
+                    {
+                        listBox.UnselectAll();
+                        previousSelection.ForEach(item => (listBox.ItemContainerGenerator.ContainerFromItem(item) as ListBoxItem).IsSelected = true);
+                    },
+                    () => // Redo
+                    {
+                        listBox.UnselectAll();
+                        newSelection.ForEach(item => (listBox.ItemContainerGenerator.ContainerFromItem(item) as ListBoxItem).IsSelected = true);
+                    },
+                    "Selection changed"
+                ));
         }
     }
 }

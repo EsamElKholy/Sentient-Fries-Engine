@@ -22,6 +22,10 @@ namespace Sentient_Editor.Utilities
             catch (Exception e)
             {
                 Debug.WriteLine(e.Message);
+
+                Logger.Log(MessageType.Info, $"Failed to serialize {instance} to file {path} with exception {e.Message}");
+
+                throw;
             }
         }
 
@@ -39,7 +43,9 @@ namespace Sentient_Editor.Utilities
             {
                 Debug.WriteLine(e.Message);
 
-                return default(T);
+                Logger.Log(MessageType.Info, $"Failed to deserialize file {path} with exception {e.Message}");
+
+                throw;
             }
         }
     }

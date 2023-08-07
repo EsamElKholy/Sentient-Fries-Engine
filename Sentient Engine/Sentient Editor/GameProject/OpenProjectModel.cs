@@ -59,6 +59,10 @@ namespace Sentient_Editor.GameProject
             catch (Exception e)
             {
                 Debug.WriteLine(e.Message);
+
+                Logger.Log(MessageType.Info, $"Failed to read project data with exception {e.Message}");
+
+                throw;
             }
         }
 

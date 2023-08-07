@@ -39,10 +39,21 @@ namespace Sentient_Editor.Utilities
             undoAction = undo;
             redoAction = redo;
         }
+
+        public UndoRedoAction(string property, object instance, object undoValue, object redoValue, string name)
+            : this
+            (
+                () => instance.GetType().GetProperty(property).SetValue(instance, undoValue),
+                () => instance.GetType().GetProperty(property).SetValue(instance, redoValue),
+                name
+            )
+        {}
     }
 
     public class UndoRedo
     {
+        private bool enableAdd = true;
+        
         private ObservableCollection<IUndoRedo> redoList = new ObservableCollection<IUndoRedo>();
         private ObservableCollection<IUndoRedo> undoList = new ObservableCollection<IUndoRedo>();
 
@@ -68,7 +79,9 @@ namespace Sentient_Editor.Utilities
                 var command = undoList.Last();
                 undoList.RemoveAt(undoList.Count - 1);
                 
+                enableAdd = false;
                 command.Undo();
+                enableAdd = true;
 
                 redoList.Insert(0, command);
             }
@@ -81,7 +94,9 @@ namespace Sentient_Editor.Utilities
                 var command = redoList.First();
                 redoList.RemoveAt(0);
 
+                enableAdd = false;
                 command.Redo();
+                enableAdd = true;
 
                 undoList.Add(command);
             }
@@ -89,9 +104,12 @@ namespace Sentient_Editor.Utilities
 
         public void Add(IUndoRedo command) 
         {
-            undoList.Add(command);
+            if (enableAdd)
+            {
+                undoList.Add(command);
 
-            redoList.Clear();
+                redoList.Clear();
+            }
         }
     }
 }

@@ -154,7 +154,8 @@ namespace Sentient_Editor.GameProject
             catch (Exception e)
             {
                 Debug.WriteLine(e.Message);
-                //throw;
+                
+                Logger.Log(MessageType.Info, $"Failed to read project templates with exception {e.Message}");
             }
         }
 
@@ -252,10 +253,9 @@ namespace Sentient_Editor.GameProject
             catch (Exception e)
             {
                 Debug.WriteLine(e.Message);
-                //throw;
+                Logger.Log(MessageType.Info, $"Failed to create {ProjectName} with exception {e.Message}");
+                throw;
             }
-
-            return String.Empty;
         }        
     }
 }

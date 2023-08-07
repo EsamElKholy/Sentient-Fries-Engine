@@ -22,7 +22,23 @@ namespace Sentient_Editor.GameProject
         public ProjectBrowserDialogue()
         {
             InitializeComponent();
+
             openProjectButton.IsChecked = true;
+            Loaded += OnProjectBrowserOpened;
+        }
+
+        private void OnProjectBrowserOpened(object sender, RoutedEventArgs e)
+        {
+            Loaded -= OnProjectBrowserOpened;
+
+            if (!OpenProjectModel.Projects.Any())
+            {
+                openProjectButton.IsEnabled = false;
+
+                openProjectView.Visibility = Visibility.Hidden;
+
+                OnToggleButton_Click(createProjectButton, new RoutedEventArgs());
+            }
         }
 
         private void OnToggleButton_Click(object sender, RoutedEventArgs e) 

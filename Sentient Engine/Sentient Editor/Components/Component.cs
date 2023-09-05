@@ -8,9 +8,12 @@ using System.Threading.Tasks;
 
 namespace Sentient_Editor.Components
 {
+    public interface IMultiSelectionComponent { }
+    
     [DataContract]
-    public class Component : ViewModelBase
+    public abstract class Component : ViewModelBase
     {
+
         [DataMember]
         public GameEntity Owner { get; private set; }
 
@@ -20,5 +23,10 @@ namespace Sentient_Editor.Components
 
             Owner = owner;
         }
+    }
+
+    public abstract class MultiSelectionComponent<T> : ViewModelBase, IMultiSelectionComponent where T : Component 
+    {
+    
     }
 }

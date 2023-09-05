@@ -23,6 +23,23 @@ namespace Sentient_Editor.Utilities
         public LoggerView()
         {
             InitializeComponent();
+
+            Loaded += (s, e) =>
+            {
+                Logger.Log(MessageType.Info, "Info Message");
+                Logger.Log(MessageType.Warning, "Warning Message");
+                Logger.Log(MessageType.Error, "Error Message");
+            };
+        }
+
+        private void OnClick_Button_Click(object sender, RoutedEventArgs e)
+        {
+            Logger.Clear();
+        }
+
+        private void MessageFilter_Button_Click(object sender, RoutedEventArgs e)
+        {
+            Logger.SetMessageFilter(toggleInfo.IsChecked.Value, toggleWarning.IsChecked.Value, toggleError.IsChecked.Value);
         }
     }
 }

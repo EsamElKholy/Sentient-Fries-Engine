@@ -42,7 +42,7 @@ namespace Sentient_Editor.Utilities
     public static class Logger
     {
         private static int messageFilterMask = (int)(MessageType.Info | MessageType.Warning | MessageType.Error);
-        private static ObservableCollection<LogMessage> logMessages = new ObservableCollection<LogMessage>();
+        private static readonly ObservableCollection<LogMessage> logMessages = new ObservableCollection<LogMessage>();
         public static ReadOnlyObservableCollection<LogMessage> LogMessages { get; private set; } = new ReadOnlyObservableCollection<LogMessage>(logMessages);
         public static CollectionViewSource FilteredMessages { get; } = new CollectionViewSource() { Source = LogMessages };
 
@@ -73,12 +73,23 @@ namespace Sentient_Editor.Utilities
             FilteredMessages.View.Refresh();
         }
 
+        public static void SetMessageFilter(bool info, bool warning, bool error) 
+        {
+            var filter = 0x0;
+
+            if (info) filter |= (int)MessageType.Info;
+            if (warning) filter |= (int)MessageType.Warning;
+            if (error) filter |= (int)MessageType.Error;
+
+            SetMessageFilter(filter);
+        }
+
         static Logger()
         {
             FilteredMessages.Filter += (sender, args) =>
             {
                 var type = (int)(args.Item as LogMessage).MessageType;
-                var accepted = (type & messageFilterMask) != 0;
+                args.Accepted = (type & messageFilterMask) != 0;
             };
         }
     }

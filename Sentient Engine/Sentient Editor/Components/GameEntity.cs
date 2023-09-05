@@ -55,9 +55,6 @@ namespace Sentient_Editor.Components
         private  ObservableCollection<Component> components = new ObservableCollection<Component>();
         public ReadOnlyObservableCollection<Component> Components { get; private set; }
 
-        public ICommand RenameCommand { get; private set; }
-        public ICommand EnableCommand { get; private set; }
-
         public GameEntity(Scene scene)
         {
             Debug.Assert(scene != null);
@@ -78,42 +75,7 @@ namespace Sentient_Editor.Components
                 OnPropertyChanged(nameof(Components));
             }
 
-            RenameCommand = new RelayCommand<string>(x =>
-            {
-                var oldName = Name;
-                Name = x;
-                Project.UndoRedo.Add(new UndoRedoAction(nameof(Name), this, oldName, x, $"Rename entity {oldName} to {x}"));
-            }, y => y != name);
-
-            EnableCommand = new RelayCommand<bool>(x =>
-            {
-                var oldEnabled = Name;
-                IsEnabled = x;
-                Project.UndoRedo.Add(new UndoRedoAction(nameof(IsEnabled), this, oldEnabled, x, $"Set entity enabled from {oldEnabled} to {x}"));
-            });
-
-            //AddComponentCommand = new RelayCommand<Component>(x =>
-            //{
-            //    AddComponent(x);
-
-            //    int index = components.Count - 1;
-
-            //    Project.UndoRedo.Add(new UndoRedoAction(
-            //        () => RemoveComponent(x),
-            //        () => components.Insert(index, x),
-            //        $"Add Component: {nameof(x)} to game entity {Name}"));
-            //});
-
-            //RemoveComponentCommand = new RelayCommand<Component>(x =>
-            //{
-            //    int index = components.IndexOf(x);
-            //    RemoveComponent(x);
-
-            //    Project.UndoRedo.Add(new UndoRedoAction(
-            //        () => components.Insert(index, x),
-            //        () => RemoveComponent(x),
-            //        $"Remove Component: {nameof(x)} to game entity {Name}"));
-            //});
+            
         }
 
         private void AddComponent(Component component) 
@@ -128,6 +90,140 @@ namespace Sentient_Editor.Components
             Debug.Assert(component != null);
 
             components.Remove(component);
+        }
+    }
+
+    public abstract class MultiSelectionEntity : ViewModelBase 
+    {
+        private bool enableUpdates = true;
+
+        private bool? isEnabled = true;
+
+        public bool? IsEnabled
+        {
+            get { return isEnabled; }
+            set
+            {
+                if (isEnabled != value)
+                {
+                    isEnabled = value;
+                    OnPropertyChanged(nameof(IsEnabled));
+                }
+            }
+        }
+
+        private string name;
+
+        public string Name
+        {
+            get { return name; }
+            set
+            {
+                if (name != value)
+                {
+                    name = value;
+                    OnPropertyChanged(nameof(Name));
+                }
+            }
+        }
+
+        private ObservableCollection<IMultiSelectionComponent> components = new ObservableCollection<IMultiSelectionComponent>();
+        public ReadOnlyObservableCollection<IMultiSelectionComponent> Components { get; private set; }
+
+        public List<GameEntity> SelectedEntities { get; } = new List<GameEntity>();
+
+        public MultiSelectionEntity(List<GameEntity> entities)
+        {
+            Debug.Assert(entities?.Any() == true);
+
+            Components = new ReadOnlyObservableCollection<IMultiSelectionComponent>(components);
+            SelectedEntities = entities;
+            PropertyChanged += (s, e) => 
+            {
+                if (enableUpdates) 
+                {
+                    UpdateGameEntities(e.PropertyName);
+                }
+            };
+        }
+
+        protected virtual bool UpdateGameEntities(string name) 
+        {
+            switch (name)
+            {
+                case nameof(Name): SelectedEntities.ForEach(e => e.Name = Name); return true;
+                case nameof(IsEnabled): SelectedEntities.ForEach(e => e.IsEnabled = IsEnabled.Value); return true;
+            }
+
+            return false;
+        }
+
+        public void Refresh() 
+        {
+            enableUpdates = false;
+            UpdateGameEntity();
+            enableUpdates = true;
+        }
+
+        protected virtual bool UpdateGameEntity() 
+        {
+            IsEnabled = GetMixedValue(SelectedEntities, new Func<GameEntity, bool>(x => x.IsEnabled));
+            Name = GetMixedValue(SelectedEntities, new Func<GameEntity, string>(x => x.Name));
+
+            return true;
+        }
+
+        public static float? GetMixedValue(List<GameEntity> gameEntities, Func<GameEntity, float> GetProperty) 
+        {
+            var firstVal = GetProperty(gameEntities.First());
+
+            foreach (var entity in gameEntities.Skip(1))
+            {
+                if (!firstVal.IsTheSameAs(GetProperty(entity)))
+                {
+                    return null;
+                }
+            }
+
+            return firstVal;
+        }
+
+        public static bool? GetMixedValue(List<GameEntity> gameEntities, Func<GameEntity, bool> GetProperty)
+        {
+            var firstVal = GetProperty(gameEntities.First());
+
+            foreach (var entity in gameEntities.Skip(1))
+            {
+                if (firstVal != GetProperty(entity))
+                {
+                    return null;
+                }
+            }
+
+            return firstVal;
+        }
+
+        public static string GetMixedValue(List<GameEntity> gameEntities, Func<GameEntity, string> GetProperty)
+        {
+            var firstVal = GetProperty(gameEntities.First());
+
+            foreach (var entity in gameEntities.Skip(1))
+            {
+                if (!firstVal.Equals(GetProperty(entity)))
+                {
+                    return null;
+                }
+            }
+
+            return firstVal;
+        }
+    }
+
+    public class MultiSelectionGameEntity : MultiSelectionEntity
+    {
+        public MultiSelectionGameEntity(List<GameEntity> entities) : base(entities)
+        {
+            Refresh();
         }
     }
 }

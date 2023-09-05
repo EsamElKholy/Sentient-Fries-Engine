@@ -37,13 +37,7 @@ namespace Sentient_Editor.Editors
 
         private void OnGameEntities_Listbox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            GameEntityView.Instance.DataContext = null;
             var listBox = sender as ListBox;
-
-            if (e.AddedItems.Count > 0)
-            {
-                GameEntityView.Instance.DataContext = listBox.SelectedItems[0];
-            }
 
             var newSelection = listBox.SelectedItems.Cast<GameEntity>().ToList();
             var previousSelection = newSelection.Except(e.AddedItems.Cast<GameEntity>()).Concat(e.RemovedItems.Cast<GameEntity>()).ToList();
@@ -62,6 +56,15 @@ namespace Sentient_Editor.Editors
                     },
                     "Selection changed"
                 ));
+
+            MultiSelectionGameEntity msGameEntity = null;
+
+            if (newSelection.Any())
+            {
+                msGameEntity = new MultiSelectionGameEntity(newSelection);
+            }
+
+            GameEntityView.Instance.DataContext = msGameEntity;
         }
     }
 }
